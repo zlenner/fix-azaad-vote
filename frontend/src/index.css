@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap');
+
+body {
+    @apply font-mono;
+    box-sizing: border-box;
+}
+
+.font-urdu {
+    font-family: 'Noto Nastaliq Urdu', serif;
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
