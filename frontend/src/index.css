@@ -16,3 +16,7 @@ body {
 *, *::after, *::before {
     box-sizing: border-box;
 }
+
+.file-container img {
+    object-fit: cover;
+}
