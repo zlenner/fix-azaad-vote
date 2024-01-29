@@ -58,7 +58,7 @@ const SearchConstituency = ({
             overflow: 'auto'
           }}
         >
-          <div className="flex sticky top-0 left-0 bg-white px-3 py-3">
+          <div className="flex sticky top-0 left-0 bg-white px-3 py-4">
             <input
               onInput={(e) => setSearchValue(e.currentTarget.value)}
               placeholder="Search Constituency"
@@ -73,6 +73,7 @@ const SearchConstituency = ({
                 className="flex font-mono py-1 hover:bg-red-50 px-2 cursor-pointer text-gray-700 hover:border-l-8 border-red-500"
                 style={{}}
                 onClick={() => {
+                  setOpen(false)
                   navigate('/' + result['Constituency No'])
                 }}
               >
@@ -88,7 +89,7 @@ const SearchConstituency = ({
     >
       <div className="flex min-w-max h-full">
         <MenuItem
-          className="cursor-pointer hover:bg-green-200 pr-1"
+          className="cursor-pointer hover:bg-emerald-200 pr-1"
           onClick={() => setOpen(true)}
         >
           <div>{selected?.['Constituency No'] ?? 'SELECT'}</div>

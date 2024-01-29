@@ -68,7 +68,7 @@ function App() {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <div className="flex bg-emerald-100 h-14 w-full">
+      <div className="flex h-14 w-full">
         <MenuItem className="whitespace-break-spaces font-bold">
           FIX{' '}
           <a
@@ -79,16 +79,16 @@ function App() {
           </a>
         </MenuItem>
         <a
-          href="https://github.com/zlenner/elections-data/tree/main/NA"
+          href="https://github.com/zlenner/elections-data"
           target="_blank"
           className="flex w-full"
         >
-          <MenuItem className="flex hover:bg-green-200 cursor-pointer w-16 text-gray-700 items-center justify-center text-2xl ml-auto">
+          <MenuItem className="flex hover:bg-emerald-200 cursor-pointer w-16 text-gray-700 items-center justify-center text-2xl ml-auto">
             <FaGithub />
           </MenuItem>
         </a>
         <MenuItem
-          className="cursor-pointer hover:bg-green-200 pl-1"
+          className="cursor-pointer hover:bg-emerald-200 pl-1"
           disabled={!prev}
         >
           <Link
@@ -101,7 +101,7 @@ function App() {
         </MenuItem>
         <SearchConstituency selected={selected} constituencies={value} />
         <MenuItem
-          className="cursor-pointer hover:bg-green-200 pr-1"
+          className="cursor-pointer hover:bg-emerald-200 pr-1"
           disabled={!next}
         >
           <Link
@@ -118,11 +118,17 @@ function App() {
           <div className="flex flex-col w-5/12 h-full border-r-4 border-dashed">
             <DisplayPage constituency={selected} />
           </div>
-          <div className="w-7/12 p-4">
+          <div className="w-7/12">
             <DisplayCandidates constituency={selected} />
           </div>
         </div>
-      ) : null}
+      ) : (
+        <div className="flex items-center justify-center w-full h-full p-4 text-2xl text-gray-500">
+          <div className="flex text-center" style={{ width: 600 }}>
+            Select a constituency from the dropdown in the top-right corner.
+          </div>
+        </div>
+      )}
     </div>
   )
 }
