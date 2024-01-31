@@ -3,7 +3,7 @@ import { Constituency } from './models'
 import { RiArrowDropLeftLine, RiArrowDropRightLine } from 'react-icons/ri'
 import clsx from 'clsx'
 import ImageZoom from 'react-image-zoom'
-import { useEvent } from 'react-use'
+import useEvent from 'react-use/lib/useEvent'
 
 const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
   const [selectedPage, setSelectedPage] = useState<number>(1)
