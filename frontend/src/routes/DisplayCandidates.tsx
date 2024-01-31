@@ -24,7 +24,7 @@ const DisplayCandidates = ({
       <div className="flex overflow-x-auto relative h-full p-2">
         <table
           className="w-full text-left text-gray-500"
-          style={{ fontSize: 15 }}
+          style={{ fontSize: 14 }}
         >
           <thead className="w-full text-gray-700 uppercase bg-gray-50">
             <tr>
