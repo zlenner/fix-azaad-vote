@@ -11,6 +11,8 @@ export interface Form33Candidate {
   }
 }
 
+export type Provinces = 'Punjab' | 'Sindh' | 'KPK' | 'Balochistan'
+
 export interface Constituency {
   'Constituency No': string
   'Constituency Name': string
@@ -18,4 +20,5 @@ export interface Constituency {
   NumPages: number
   PageFiles: string[]
   Candidates: Form33Candidate[]
+  province: Provinces
 }

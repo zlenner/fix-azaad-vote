@@ -1,7 +1,7 @@
 import { RiArrowDropRightLine } from 'react-icons/ri'
 import { RiArrowDropLeftLine } from 'react-icons/ri'
 import useAsyncRefresh from '../hooks/useAsyncRefresh'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Constituency } from './models'
 import MenuItem from './MenuItem'
 import SearchConstituency from './SearchConstituency'
@@ -10,21 +10,35 @@ import DisplayCandidates from './DisplayCandidates'
 import DisplayPage from './DisplayPage'
 import { FaGithub } from 'react-icons/fa6'
 
+function AddProvinceName(province: string) {
+  return (data: any) => {
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        {
+          ...(value as any),
+          province: province
+        }
+      ])
+    )
+  }
+}
+
 function App() {
   const { value } = useAsyncRefresh(async () => {
     const [balochistan, kpk, punjab, sindh] = await Promise.all([
-      fetch('https://elections-data.vercel.app/NA/balochistan.json').then((r) =>
-        r.json()
-      ),
-      fetch('https://elections-data.vercel.app/NA/kpk.json').then((r) =>
-        r.json()
-      ),
-      fetch('https://elections-data.vercel.app/NA/punjab.json').then((r) =>
-        r.json()
-      ),
-      fetch('https://elections-data.vercel.app/NA/sindh.json').then((r) =>
-        r.json()
-      )
+      fetch('https://elections-data.vercel.app/NA/balochistan.json')
+        .then((r) => r.json())
+        .then(AddProvinceName('Balochistan')),
+      fetch('https://elections-data.vercel.app/NA/kpk.json')
+        .then((r) => r.json())
+        .then(AddProvinceName('KPK')),
+      fetch('https://elections-data.vercel.app/NA/punjab.json')
+        .then((r) => r.json())
+        .then(AddProvinceName('Punjab')),
+      fetch('https://elections-data.vercel.app/NA/sindh.json')
+        .then((r) => r.json())
+        .then(AddProvinceName('Sindh'))
     ])
 
     const combined = {
@@ -35,6 +49,8 @@ function App() {
     } as {
       [key: string]: Constituency
     }
+
+    console.log(sindh)
 
     return combined
   }, [])
@@ -63,8 +79,6 @@ function App() {
     value[
       'NA-' + (parseInt(selected['Constituency No'].slice(3)) - 1).toString()
     ]
-
-  console.log(selected, next, prev)
 
   return (
     <div className="flex flex-col w-full h-full">

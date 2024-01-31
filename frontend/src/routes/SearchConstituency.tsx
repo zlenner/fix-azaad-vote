@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Constituency } from './models'
+import { Constituency, Provinces } from './models'
 import Fuse from 'fuse.js'
 import { Popover } from 'react-tiny-popover'
 import MenuItem from './MenuItem'
@@ -41,6 +41,16 @@ const SearchConstituency = ({
 
   const navigate = useNavigate()
 
+  const PROVINCE_COLORS: {
+    [key in Provinces]: string
+  } = {
+    Balochistan: '#3b82f6', // purple
+
+    Punjab: '#a855f7', // blue
+    Sindh: '#fbbf24', // yellow
+    KPK: '#14b8a6' // green
+  }
+
   return (
     <Popover
       isOpen={open}
@@ -71,13 +81,17 @@ const SearchConstituency = ({
               <div
                 key={result['Constituency No']}
                 className="flex font-mono py-1 hover:bg-red-50 px-2 cursor-pointer text-gray-700 hover:border-l-8 border-red-500"
-                style={{}}
                 onClick={() => {
                   setOpen(false)
                   navigate('/' + result['Constituency No'])
                 }}
               >
-                <div className="font-bold min-w-fit pr-4">
+                <div
+                  className="font-bold min-w-fit mr-4 text-white px-2"
+                  style={{
+                    backgroundColor: PROVINCE_COLORS[result.province]
+                  }}
+                >
                   {result['Constituency No']}
                 </div>
                 <div className="text-right">{result['Constituency Name']}</div>
