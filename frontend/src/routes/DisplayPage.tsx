@@ -3,6 +3,7 @@ import { Constituency } from './models'
 import { RiArrowDropLeftLine, RiArrowDropRightLine } from 'react-icons/ri'
 import clsx from 'clsx'
 import ImageZoom from 'react-image-zoom'
+import { useEvent } from 'react-use'
 
 const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
   const [selectedPage, setSelectedPage] = useState<number>(1)
@@ -12,6 +13,10 @@ const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
   useEffect(() => {
     setImageHeight(imageContainerRef.current?.clientHeight ?? 0)
   }, [])
+
+  useEvent('resize', () => {
+    setImageHeight(imageContainerRef.current?.clientHeight ?? 0)
+  })
 
   return (
     <div className="flex flex-col h-full">
