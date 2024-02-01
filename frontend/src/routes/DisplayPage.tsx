@@ -14,6 +14,10 @@ const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
     setImageHeight(imageContainerRef.current?.clientHeight ?? 0)
   }, [])
 
+  useEffect(() => {
+    setSelectedPage(1)
+  }, [constituency['Constituency No']])
+
   useEvent('resize', () => {
     setImageHeight(imageContainerRef.current?.clientHeight ?? 0)
   })
