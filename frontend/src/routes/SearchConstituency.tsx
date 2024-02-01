@@ -106,7 +106,21 @@ const SearchConstituency = ({
           className="cursor-pointer hover:bg-emerald-200 pr-1"
           onClick={() => setOpen(true)}
         >
-          <div>{selected?.['Constituency No'] ?? 'SELECT'}</div>
+          {selected ? (
+            <div className="flex">
+              <div
+                className="font-bold min-w-fit mr-3 text-white px-2"
+                style={{
+                  backgroundColor: PROVINCE_COLORS[selected.province]
+                }}
+              >
+                {selected['Constituency No']}
+              </div>
+              <div>{selected['Constituency Name']}</div>
+            </div>
+          ) : (
+            'SELECT'
+          )}
           <RiArrowDropDownLine className="w-8 h-8 ml-1" />
         </MenuItem>
       </div>
