@@ -1,10 +1,6 @@
-import { Constituency } from './models'
+import { Seat } from '../hooks/useData/useLoadData'
 
-const DisplayCandidates = ({
-  constituency
-}: {
-  constituency: Constituency
-}) => {
+const DisplayCandidates = ({ constituency }: { constituency: Seat }) => {
   const keys = [
     'NO',
     'Name (English)',
@@ -36,23 +32,33 @@ const DisplayCandidates = ({
             </tr>
           </thead>
           <tbody>
-            {constituency.Candidates.map((candidate, index) => (
-              <tr key={index} className="bg-white border-b">
-                {Object.entries(candidate).map(([key, value]) => (
-                  <td className="py-2 px-1" key={key}>
-                    {key === 'pti_backed' ? (
-                      <strong>{!!value ? 'TRUE' : 'FALSE'}</strong>
-                    ) : key === 'symbol_url' ? (
-                      <a href={value} className="text-blue-500 hover:underline">
-                        {value.substring(30)}
-                      </a>
-                    ) : (
-                      value
-                    )}
+            {constituency.candidates?.map((candidate, index) => {
+              console.log(candidate.pti_backed)
+              return (
+                <tr key={index} className="bg-white border-b">
+                  <td className="py-2 px-1">{candidate.serial_no}</td>
+                  <td className="py-2 px-1">
+                    {candidate.candidate_english_name}
                   </td>
-                ))}
-              </tr>
-            ))}
+                  <td className="py-2 px-1">{candidate.candidate_urdu_name}</td>
+                  <td className="py-2 px-1">{candidate.address}</td>
+                  <td className="py-2 px-1">{candidate.symbol_name}</td>
+                  <td className="py-2 px-1">{candidate.party}</td>
+                  <td className="py-2 px-1">{candidate.symbol_no}</td>
+                  <td className="py-2 px-1">
+                    <a
+                      href={candidate.symbol_url}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {candidate.symbol_url.substring(30)}
+                    </a>
+                  </td>
+                  <td className="py-2 px-1 font-bold">
+                    {candidate.pti_backed ? 'TRUE' : ''}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

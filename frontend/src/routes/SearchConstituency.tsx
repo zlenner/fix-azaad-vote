@@ -1,54 +1,102 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Constituency, Provinces } from './models'
 import Fuse from 'fuse.js'
 import { Popover } from 'react-tiny-popover'
 import MenuItem from './MenuItem'
 import { RiArrowDropDownLine } from 'react-icons/ri'
+import { Seat } from '../hooks/useData/useLoadData'
+import { Province } from '../hooks/useData/loadForm33'
+import { useData } from '../hooks/useData'
 
 const SearchConstituency = ({
   selected,
   constituencies
 }: {
-  selected: Constituency | undefined
+  selected: Seat | undefined
   constituencies: {
-    [key: string]: Constituency
+    [key: string]: Seat
   }
 }) => {
   const [open, setOpen] = useState<boolean>(false)
+  const [data] = useData()
   const fuse = useMemo(() => {
-    return new Fuse(Object.values(constituencies), {
-      keys: ['Constituency No', 'Constituency Name']
-    })
-  }, [JSON.stringify(constituencies)])
+    const fuseOptions = {
+      // isCaseSensitive: false,
+      // includeScore: false,
+      // shouldSort: true,
+      // includeMatches: false,
+      // findAllMatches: false,
+      // minMatchCharLength: 1,
+      // location: 0,
+      // threshold: 0.6,
+      // distance: 100,
+      // useExtendedSearch: false,
+      // ignoreLocation: false,
+      // ignoreFieldNorm: false,
+      // fieldNormWeight: 1,
+      keys: [
+        'seat',
+        'pti_data.constituency_name',
+        'pti_data.candidate_name',
+        'form33_data.constituency_name'
+      ]
+    }
+
+    return new Fuse(
+      Object.values(data.seats).filter((seat) => seat.form33_data),
+      fuseOptions
+    )
+  }, [data.seats === undefined])
 
   const [searchValue, setSearchValue] = useState<string>('')
 
   const searchResults = useMemo(() => {
     if (searchValue.length > 0) {
-      return fuse
-        .search(searchValue)
-        .slice(0, 20)
-        .map((result) => result.item)
-    } else {
-      return Object.values(constituencies).sort((a, b) => {
-        const aNo = parseInt(a['Constituency No'].slice(3))
-        const bNo = parseInt(b['Constituency No'].slice(3))
-        return aNo - bNo
+      const exact = Object.values(data.seats).find((seat) => {
+        const isMatchingCode =
+          seat.seat.toLowerCase().replaceAll('-', '') ===
+          searchValue.toLowerCase().replaceAll('-', '')
+        const isMatchingNumber = parseInt(seat.seat) === parseInt(searchValue)
+
+        return isMatchingCode || isMatchingNumber
       })
+
+      const results: {
+        item: Seat
+      }[] = []
+      if (exact) {
+        results.push({
+          item: exact
+        })
+      }
+
+      results.push(
+        ...fuse
+          .search(searchValue)
+          .filter((result) => result.item.seat !== exact?.seat)
+      )
+
+      return results
+    } else {
+      return Object.values(data.seats)
+        .filter((seat) => seat.form33_data)
+        .map((seat) => {
+          return {
+            item: seat
+          }
+        })
     }
   }, [searchValue])
 
   const navigate = useNavigate()
 
   const PROVINCE_COLORS: {
-    [key in Provinces]: string
+    [key in Province]: string
   } = {
-    Balochistan: '#3b82f6', // purple
-
-    Punjab: '#a855f7', // blue
-    Sindh: '#fbbf24', // yellow
-    KPK: '#14b8a6' // green
+    balochistan: '#3b82f6', // purple
+    punjab: '#a855f7', // blue
+    sindh: '#fbbf24', // yellow
+    kpk: '#14b8a6' // green
   }
 
   return (
@@ -77,26 +125,31 @@ const SearchConstituency = ({
             ></input>
           </div>
           <div className="flex flex-col w-full px-3 mb-3">
-            {searchResults?.map((result) => (
-              <div
-                key={result['Constituency No']}
-                className="flex font-mono py-1 hover:bg-red-50 px-2 cursor-pointer text-gray-700 hover:border-l-8 border-red-500"
-                onClick={() => {
-                  setOpen(false)
-                  navigate('/' + result['Constituency No'])
-                }}
-              >
+            {searchResults?.map((result) => {
+              return (
                 <div
-                  className="font-bold min-w-fit mr-4 text-white px-2"
-                  style={{
-                    backgroundColor: PROVINCE_COLORS[result.province]
+                  key={result.item.seat}
+                  className="flex font-mono py-1 hover:bg-red-50 px-2 cursor-pointer text-gray-700 hover:border-l-8 border-red-500"
+                  onClick={() => {
+                    setOpen(false)
+                    navigate('/' + result.item.seat)
                   }}
                 >
-                  {result['Constituency No']}
+                  <div
+                    className="font-bold min-w-fit mr-4 text-white px-2"
+                    style={{
+                      backgroundColor:
+                        PROVINCE_COLORS[result.item.province as Province]
+                    }}
+                  >
+                    {result.item.seat}
+                  </div>
+                  <div className="text-right">
+                    {result.item.form33_data.constituency_name}
+                  </div>
                 </div>
-                <div className="text-right">{result['Constituency Name']}</div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       }
@@ -111,12 +164,13 @@ const SearchConstituency = ({
               <div
                 className="font-bold min-w-fit mr-3 text-white px-2"
                 style={{
-                  backgroundColor: PROVINCE_COLORS[selected.province]
+                  backgroundColor:
+                    PROVINCE_COLORS[selected.province as Province]
                 }}
               >
-                {selected['Constituency No']}
+                {selected.seat}
               </div>
-              <div>{selected['Constituency Name']}</div>
+              <div>{selected.form33_data.constituency_name}</div>
             </div>
           ) : (
             'SELECT'

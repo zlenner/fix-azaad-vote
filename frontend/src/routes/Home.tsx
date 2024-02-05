@@ -2,13 +2,14 @@ import { RiArrowDropRightLine } from 'react-icons/ri'
 import { RiArrowDropLeftLine } from 'react-icons/ri'
 import useAsyncRefresh from '../hooks/useAsyncRefresh'
 import { useMemo } from 'react'
-import { Constituency } from './models'
 import MenuItem from './MenuItem'
 import SearchConstituency from './SearchConstituency'
 import { Link, useParams } from 'react-router-dom'
 import DisplayCandidates from './DisplayCandidates'
 import DisplayPage from './DisplayPage'
 import { FaGithub } from 'react-icons/fa6'
+import { DataProvider, useData } from '../hooks/useData'
+import { useLoadData } from '../hooks/useData/useLoadData'
 
 function AddProvinceName(province: string) {
   return (data: any) => {
@@ -25,125 +26,93 @@ function AddProvinceName(province: string) {
 }
 
 function App() {
-  const { value } = useAsyncRefresh(async () => {
-    const [balochistan, kpk, punjab, sindh] = await Promise.all([
-      fetch('https://elections-data.vercel.app/NA/balochistan.json')
-        .then((r) => r.json())
-        .then(AddProvinceName('Balochistan')),
-      fetch('https://elections-data.vercel.app/NA/kpk.json')
-        .then((r) => r.json())
-        .then(AddProvinceName('KPK')),
-      fetch('https://elections-data.vercel.app/NA/punjab.json')
-        .then((r) => r.json())
-        .then(AddProvinceName('Punjab')),
-      fetch('https://elections-data.vercel.app/NA/sindh.json')
-        .then((r) => r.json())
-        .then(AddProvinceName('Sindh'))
-    ])
-
-    const combined = {
-      ...balochistan,
-      ...kpk,
-      ...punjab,
-      ...sindh
-    } as {
-      [key: string]: Constituency
-    }
-
-    console.log(sindh)
-
-    return combined
-  }, [])
+  const data = useLoadData()
 
   const { constituency_code } = useParams()
 
   const selected = useMemo(() => {
-    if (!value || !constituency_code) {
+    if (!data || !constituency_code) {
       return
     }
 
-    return value[constituency_code]
-  }, [constituency_code, value === undefined])
+    return data.seats[constituency_code]
+  }, [constituency_code, data === undefined])
 
-  if (value === undefined) {
-    return <div>Loading...</div>
+  if (data === undefined) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        Loading...
+      </div>
+    )
   }
 
   const next =
     selected &&
-    value[
-      'NA-' + (parseInt(selected['Constituency No'].slice(3)) + 1).toString()
-    ]
+    data.seats['NA-' + (parseInt(selected.seat.slice(3)) + 1).toString()]
   const prev =
     selected &&
-    value[
-      'NA-' + (parseInt(selected['Constituency No'].slice(3)) - 1).toString()
-    ]
+    data.seats['NA-' + (parseInt(selected.seat.slice(3)) - 1).toString()]
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <div className="flex h-14 w-full">
-        <MenuItem className="whitespace-break-spaces font-bold">
-          FIX{' '}
-          <a
-            href="https://azaadvote.com"
-            className="text-blue-400 hover:underline"
-          >
-            azaadvote.com
-          </a>
-        </MenuItem>
-        <a
-          href="https://github.com/zlenner/elections-data"
-          target="_blank"
-          className="flex w-full"
-        >
-          <MenuItem className="flex hover:bg-emerald-200 cursor-pointer w-16 text-gray-700 items-center justify-center text-2xl ml-auto">
-            <FaGithub />
+    <DataProvider initialValue={data}>
+      <div className="flex flex-col w-full h-full">
+        <div className="flex h-14 w-full">
+          <MenuItem className="whitespace-break-spaces font-bold">
+            FIX{' '}
+            <a
+              href="https://azaadvote.com"
+              className="text-blue-400 hover:underline"
+            >
+              azaadvote.com
+            </a>
           </MenuItem>
-        </a>
-        <MenuItem
-          className="cursor-pointer hover:bg-emerald-200 pl-1"
-          disabled={!prev}
-        >
-          <Link
-            to={`/${prev?.['Constituency No']}`}
-            className="flex items-center"
+          <a
+            href="https://github.com/zlenner/elections-data"
+            target="_blank"
+            className="flex w-full"
           >
-            <RiArrowDropLeftLine className="w-8 h-8" />
-            <div className="hidden sm:block">BACK</div>
-          </Link>
-        </MenuItem>
-        <SearchConstituency selected={selected} constituencies={value} />
-        <MenuItem
-          className="cursor-pointer hover:bg-emerald-200 pr-1"
-          disabled={!next}
-        >
-          <Link
-            to={`/${next?.['Constituency No']}`}
-            className="flex items-center"
+            <MenuItem className="flex hover:bg-emerald-200 cursor-pointer w-16 text-gray-700 items-center justify-center text-2xl ml-auto">
+              <FaGithub />
+            </MenuItem>
+          </a>
+          <MenuItem
+            className="cursor-pointer hover:bg-emerald-200 pl-1"
+            disabled={!prev}
           >
-            <div className="hidden sm:block">NEXT</div>
-            <RiArrowDropRightLine className="w-8 h-8" />
-          </Link>
-        </MenuItem>
+            <Link to={`/${prev?.seat}`} className="flex items-center">
+              <RiArrowDropLeftLine className="w-8 h-8" />
+              <div className="hidden sm:block">BACK</div>
+            </Link>
+          </MenuItem>
+          <SearchConstituency selected={selected} constituencies={data.seats} />
+          <MenuItem
+            className="cursor-pointer hover:bg-emerald-200 pr-1"
+            disabled={!next}
+          >
+            <Link to={`/${next?.seat}`} className="flex items-center">
+              <div className="hidden sm:block">NEXT</div>
+              <RiArrowDropRightLine className="w-8 h-8" />
+            </Link>
+          </MenuItem>
+        </div>
+        {selected ? (
+          <div className="flex" style={{ height: 'calc(100% - 3.5rem)' }}>
+            <div className="flex flex-col w-5/12 h-full border-r-4 border-dashed">
+              <DisplayPage constituency={selected} />
+            </div>
+            <div className="w-7/12">
+              <DisplayCandidates constituency={selected} />
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center w-full h-full p-4 text-2xl text-gray-500">
+            <div className="flex text-center" style={{ width: 600 }}>
+              Select a constituency from the dropdown in the top-right corner.
+            </div>
+          </div>
+        )}
       </div>
-      {selected ? (
-        <div className="flex" style={{ height: 'calc(100% - 3.5rem)' }}>
-          <div className="flex flex-col w-5/12 h-full border-r-4 border-dashed">
-            <DisplayPage constituency={selected} />
-          </div>
-          <div className="w-7/12">
-            <DisplayCandidates constituency={selected} />
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center justify-center w-full h-full p-4 text-2xl text-gray-500">
-          <div className="flex text-center" style={{ width: 600 }}>
-            Select a constituency from the dropdown in the top-right corner.
-          </div>
-        </div>
-      )}
-    </div>
+    </DataProvider>
   )
 }
 

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Constituency } from './models'
+import { useEffect, useRef, useState } from 'react'
 import { RiArrowDropLeftLine, RiArrowDropRightLine } from 'react-icons/ri'
 import clsx from 'clsx'
 import ImageZoom from 'react-image-zoom'
 import useEvent from 'react-use/lib/useEvent'
+import { Seat } from '../hooks/useData/useLoadData'
 
-const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
+const DisplayPage = ({ constituency }: { constituency: Seat }) => {
   const [selectedPage, setSelectedPage] = useState<number>(1)
   const imageContainerRef = useRef<HTMLDivElement>(null)
   const [imageHeight, setImageHeight] = useState<number>(0)
@@ -16,7 +16,7 @@ const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
 
   useEffect(() => {
     setSelectedPage(1)
-  }, [constituency['Constituency No']])
+  }, [constituency.seat])
 
   useEvent('resize', () => {
     setImageHeight(imageContainerRef.current?.clientHeight ?? 0)
@@ -35,14 +35,14 @@ const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
           <ImageZoom
             img={
               'https://files.azaadvote.com/' +
-              constituency.PageFiles[selectedPage - 1]
+              constituency.form33_data.page_files[selectedPage - 1]
             }
             height={imageHeight}
             zoomPosition="original"
           />
         </div>
         <div className="flex flex-col">
-          {constituency.PageFiles.length > 1 ? (
+          {constituency.form33_data.page_files.length > 1 ? (
             <div className="flex w-fit mb-4 mx-auto bg-gray-50 font-bold shadow rounded shadow-gray-300 px-3 py-2 relative bottom-6 items-center">
               <RiArrowDropLeftLine
                 className={clsx(
@@ -56,24 +56,29 @@ const DisplayPage = ({ constituency }: { constituency: Constituency }) => {
                 }}
               />
               <div className="mx-4">
-                PAGE {selectedPage}/{constituency.PageFiles.length}
+                PAGE {selectedPage}/{constituency.form33_data.page_files.length}
               </div>
               <RiArrowDropRightLine
                 className={clsx(
                   'w-8 h-8 cursor-pointer hover:bg-gray-100 rounded active:bg-gray-200',
-                  selectedPage === constituency.PageFiles.length &&
+                  selectedPage === constituency.form33_data.page_files.length &&
                     'opacity-40 pointer-events-none'
                 )}
                 onClick={() => {
                   setSelectedPage((selectedPage) =>
-                    Math.min(selectedPage + 1, constituency.PageFiles.length)
+                    Math.min(
+                      selectedPage + 1,
+                      constituency.form33_data.page_files.length
+                    )
                   )
                 }}
               />
             </div>
           ) : (
             <div className="flex w-fit mb-4 mx-auto bg-gray-50 font-bold shadow rounded shadow-gray-300 px-3 py-2 relative bottom-6 items-center">
-              <div className="mx-2">PAGE 1/{constituency.PageFiles.length}</div>
+              <div className="mx-2">
+                PAGE 1/{constituency.form33_data.page_files.length}
+              </div>
             </div>
           )}
         </div>
