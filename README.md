@@ -1,5 +1,7 @@
 # fix.azaadvote.com
 
+## Description
+
 [`zlenner/elections-data`](https://github.com/zlenner/elections-data) is an attempt to translate image scans of ECP Form-33s into machine-readable JSON:
 
 **Punjab**: https://drive.google.com/drive/folders/1-Sjn24YKSR10-WmmFpWDRRO1csDe8TMj
@@ -21,3 +23,10 @@ We need to devise a way on this site to allow users to correct the JSON data.
 One of the ideas is to have a Google Sheets/Airtable iframe instead of the table on the right that lets authenticated users easily edit and correct errors without having to leave the wesite.
 
 We have **_VERY_** little time until February 8th. Submit a PR directly or reach out to me on @clynergy if you can build this.
+
+## How to run
+
+1. Clone the repo
+2. Navigate to the `frontend` directory.
+3. Run `npm install` to install the dependencies.
+4. Run `npm run dev` to start the development server.
