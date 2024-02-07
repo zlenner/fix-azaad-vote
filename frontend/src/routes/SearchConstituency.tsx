@@ -145,7 +145,7 @@ const SearchConstituency = ({
                     {result.item.seat}
                   </div>
                   <div className="text-right">
-                    {result.item.form33_data.constituency_name}
+                    {result.item.form33_data?.constituency_name}
                   </div>
                 </div>
               )
@@ -170,7 +170,7 @@ const SearchConstituency = ({
               >
                 {selected.seat}
               </div>
-              <div>{selected.form33_data.constituency_name}</div>
+              <div>{selected.form33_data?.constituency_name}</div>
             </div>
           ) : (
             'SELECT'

@@ -1,6 +1,5 @@
 import { RiArrowDropRightLine } from 'react-icons/ri'
 import { RiArrowDropLeftLine } from 'react-icons/ri'
-import useAsyncRefresh from '../hooks/useAsyncRefresh'
 import { useMemo } from 'react'
 import MenuItem from './MenuItem'
 import SearchConstituency from './SearchConstituency'

@@ -22,6 +22,10 @@ const DisplayPage = ({ constituency }: { constituency: Seat }) => {
     setImageHeight(imageContainerRef.current?.clientHeight ?? 0)
   })
 
+  if (!constituency.form33_data) {
+    return null
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="bg-red-500 text-white px-4 py-2 font-bold">
@@ -56,20 +60,24 @@ const DisplayPage = ({ constituency }: { constituency: Seat }) => {
                 }}
               />
               <div className="mx-4">
-                PAGE {selectedPage}/{constituency.form33_data.page_files.length}
+                PAGE {selectedPage}/
+                {constituency.form33_data?.page_files.length}
               </div>
               <RiArrowDropRightLine
                 className={clsx(
                   'w-8 h-8 cursor-pointer hover:bg-gray-100 rounded active:bg-gray-200',
-                  selectedPage === constituency.form33_data.page_files.length &&
+                  selectedPage ===
+                    constituency.form33_data?.page_files.length &&
                     'opacity-40 pointer-events-none'
                 )}
                 onClick={() => {
                   setSelectedPage((selectedPage) =>
-                    Math.min(
-                      selectedPage + 1,
-                      constituency.form33_data.page_files.length
-                    )
+                    !constituency.form33_data
+                      ? 0
+                      : Math.min(
+                          selectedPage + 1,
+                          constituency.form33_data.page_files.length
+                        )
                   )
                 }}
               />
