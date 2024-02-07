@@ -36,7 +36,7 @@ function AddProvinceName(province: string, type: 'national' | 'provincial') {
 }
 
 const form33 = async function () {
-  const [balochistan, kpk, punjab, sindh] = await Promise.all([
+  const [balochistan, kpk, punjab, sindh, ...provincial] = await Promise.all([
     fetch('https://elections-data.vercel.app/NA/balochistan.json')
       .then((r) => r.json())
       .then(AddProvinceName('balochistan', 'national')),
@@ -48,14 +48,26 @@ const form33 = async function () {
       .then(AddProvinceName('punjab', 'national')),
     fetch('https://elections-data.vercel.app/NA/sindh.json')
       .then((r) => r.json())
-      .then(AddProvinceName('sindh', 'national'))
+      .then(AddProvinceName('sindh', 'national')),
+    fetch('https://elections-data.vercel.app/PA/kpk.json')
+      .then((r) => r.json())
+      .then(AddProvinceName('kpk', 'provincial')),
+    fetch('https://elections-data.vercel.app/PA/punjab.json')
+      .then((r) => r.json())
+      .then(AddProvinceName('punjab', 'provincial')),
+    fetch('https://elections-data.vercel.app/PA/sindh.json')
+      .then((r) => r.json())
+      .then(AddProvinceName('sindh', 'provincial'))
   ])
 
   const combinedForm33Data = {
     ...balochistan,
     ...kpk,
     ...punjab,
-    ...sindh
+    ...sindh,
+    ...provincial[0],
+    ...provincial[1],
+    ...provincial[2]
   } as {
     [key: string]: Form33Constituency
   }
